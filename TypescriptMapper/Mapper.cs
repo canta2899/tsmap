@@ -13,13 +13,25 @@ public class Mapper
         return Formatter.ToTsInterface(typeEntry);
     }
 
+    public string MapInterface(Type t)
+    {
+        var typeEntry = new TypeMapper(t);
+        return Formatter.ToTsInterface(typeEntry);
+    }
+
     public string MapType<T>()
     {
         var typeEntry = new TypeMapper(typeof(T));
         return Formatter.ToTsType(typeEntry);
     }
 
-    internal IEnumerable<Type> GetMappableTypes(Assembly assembly)
+    public string MapType(Type t)
+    {
+        var typeEntry = new TypeMapper(t);
+        return Formatter.ToTsType(typeEntry);
+    }
+
+    public IEnumerable<Type> GetMappableTypes(Assembly assembly)
     {
         var attributeType = typeof(TsMapAttribute);
         return assembly.GetTypes().Where(x => Attribute.IsDefined(x, attributeType));

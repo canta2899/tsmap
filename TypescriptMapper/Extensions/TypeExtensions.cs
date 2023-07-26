@@ -4,8 +4,7 @@ namespace TypescriptMapper.Extensions;
 
 public static class TypeExtensions
 {
-   private static List<Type> CollectionTypes = new()
-      { typeof(IEnumerable<>), typeof(ICollection<>), typeof(IEnumerator<>) };
+   private static Type[] CollectionTypes = { typeof(IEnumerable), typeof(ICollection<>), typeof(IEnumerator) };
    
    public static bool IsNumeric(this Type type)
    {
@@ -30,8 +29,8 @@ public static class TypeExtensions
 
    public static bool IsCollection(this Type type)
    {
-      return type.GetInterfaces().Where(x => x.IsGenericType)
-         .Any(x => CollectionTypes.Contains(x.GetGenericTypeDefinition()));
+      return type.GetInterfaces().Any(x => 
+         CollectionTypes.Contains(x) || (x.IsGenericType && CollectionTypes.Contains(x.GetGenericTypeDefinition())));
    }
 
    public static bool IsString(this Type type)
