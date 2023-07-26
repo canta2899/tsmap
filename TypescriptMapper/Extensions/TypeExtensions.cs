@@ -1,7 +1,12 @@
-namespace TypescriptMapper;
+using System.Collections;
+
+namespace TypescriptMapper.Extensions;
 
 public static class TypeExtensions
 {
+   private static List<Type> CollectionTypes = new()
+      { typeof(IEnumerable<>), typeof(ICollection<>), typeof(IEnumerator<>) };
+   
    public static bool IsNumeric(this Type type)
    {
         switch (Type.GetTypeCode(type))
@@ -23,6 +28,12 @@ public static class TypeExtensions
         }
    }
 
+   public static bool IsCollection(this Type type)
+   {
+      return type.GetInterfaces().Where(x => x.IsGenericType)
+         .Any(x => CollectionTypes.Contains(x.GetGenericTypeDefinition()));
+   }
+
    public static bool IsString(this Type type)
    {
       switch (Type.GetTypeCode(type))
@@ -33,6 +44,11 @@ public static class TypeExtensions
          default:
             return false;
       }
+   }
+
+   public static bool IsBool(this Type type)
+   {
+      return type == typeof(bool);
    }
 
    public static bool IsDate(this Type type) => Type.GetTypeCode(type) == TypeCode.DateTime;

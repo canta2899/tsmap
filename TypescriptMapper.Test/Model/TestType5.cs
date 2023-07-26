@@ -8,6 +8,6 @@ public class TestType5
     public DateTime? NullableDate { get; set; }
     public TestType1 Test1 { get; set; }
     public TestType1? Test2 { get; set; }
-    public IEnumerable<TestType1> TestList1 { get; set; }
+    public ICollection<TestType1> TestList1 { get; set; }
     public List<TestType1> TestList2 { get; set; }
 }

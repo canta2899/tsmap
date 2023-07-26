@@ -74,7 +74,7 @@ public class MapperTest
         var expected =
             "export interface TestType5 {\n\tnullableString?: string;\n\tnonNullableInt?: number;" +
             "\n\tnullableDouble?: number | null;\n\tnullableDate?: Date | null;" +
-            "\n\ttest1?: TestType1;\n\ttest2?: TestType1;\n\ttestList1?: []TestType1;\n\ttestlist2?: []TestType1;}";
+            "\n\ttest1?: TestType1;\n\ttest2?: TestType1;\n\ttestList1?: TestType1[];\n\ttestList2?: TestType1[];\n}";
 
         // act
         var mappedType = mapper.MapInterface<TestType5>();
@@ -91,11 +91,25 @@ public class MapperTest
         var expected =
             "export type TestType5 = {\n\tnullableString?: string;\n\tnonNullableInt?: number;" +
             "\n\tnullableDouble?: number | null;\n\tnullableDate?: Date | null;" +
-            "\n\ttest1?: TestType1;\n\ttest2?: TestType1;\n\ttestList1?: []TestType1;\n\ttestlist2?: []TestType1;}";
+            "\n\ttest1?: TestType1;\n\ttest2?: TestType1;\n\ttestList1?: TestType1[];\n\ttestList2?: TestType1[];\n}";
         
         // act
         var mappedType = mapper.MapType<TestType5>();
         
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+    
+    [Fact]
+    public void Mapper_ShouldMapGeneric_WhenTheyHaveBaseType()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = "export interface TestType6 {\n\tboolGeneric?: TestTypeGeneric1<boolean>;\n}";
+
+        // act
+        var mappedType = mapper.MapInterface<TestType6>();
+
         // assert
         Assert.Equal(expected, mappedType);
     }

@@ -1,3 +1,5 @@
+using TypescriptMapper.Extensions;
+
 namespace TypescriptMapper.Test;
 
 public class CaseConversionTest
@@ -13,7 +15,6 @@ public class CaseConversionTest
         camelCaseString = pascaleCaseString.ToCamelCase();
 
         // assert
-        
         Assert.Equal("myEntryPoint", camelCaseString);
     }
 
@@ -43,6 +44,5 @@ public class CaseConversionTest
         
         // assert 
         Assert.Equal("myEntryPoint", camelCaseString);
-
     }
 }

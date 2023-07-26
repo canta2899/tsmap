@@ -3,20 +3,25 @@ using TypescriptMapper.Attributes;
 
 namespace TypescriptMapper;
 
-public class TypeEntry
+public class TypeMapper
 {
     private readonly Type _t;
-    public TypeEntry(Type type)
+    public TypeMapper(Type type)
     {
         _t = type;
     }
 
-    public string Name => _t.Name;
-    public IEnumerable<PropertyEntry> Fields => GetMappableProperties(_t);
-    
-    private IEnumerable<PropertyEntry> GetMappableProperties(Type type)
+    public string Name => GetTypeName();
+    public IEnumerable<PropertyMapper> Fields => GetMappableProperties();
+
+    private string GetTypeName()
     {
-        return type
+        return _t.IsGenericType ? Converter.GetGenericDefinition(_t) : _t.Name;
+    }
+    
+    private IEnumerable<PropertyMapper> GetMappableProperties()
+    {
+        return _t 
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(x =>
                 {
@@ -24,6 +29,6 @@ public class TypeEntry
                         .GetCustomAttributes()
                         .Select(x => x.GetType()).Contains(typeof(TsExcludeAttribute));
                 })
-            .Select(x => new PropertyEntry(x));
+            .Select(x => new PropertyMapper(x));
     }
 }

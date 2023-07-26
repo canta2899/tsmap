@@ -8,14 +8,14 @@ public class Mapper
 {
     public string MapInterface<T>()
     {
-        var typeEntry = new TypeEntry(typeof(T));
+        var typeEntry = new TypeMapper(typeof(T));
 
         return Formatter.ToTsInterface(typeEntry);
     }
 
     public string MapType<T>()
     {
-        var typeEntry = new TypeEntry(typeof(T));
+        var typeEntry = new TypeMapper(typeof(T));
         return Formatter.ToTsType(typeEntry);
     }
 
