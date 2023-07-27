@@ -16,6 +16,4 @@ public class PropertyMapper
     {
         _propertyInfo = propertyInfo;
     }
-    
-
 }

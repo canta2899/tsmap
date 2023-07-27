@@ -49,7 +49,8 @@ public class Converter
     internal static string GetCollectionDefinition(Type type)
     {
         var genericArg = type.GetGenericArguments().FirstOrDefault();
-        var safeTypeName = GetSafeTypeName(genericArg.Name);
+        var mappedGenericArg = MapToTsType(genericArg);
+        var safeTypeName = GetSafeTypeName(mappedGenericArg);
         return $"{safeTypeName}[]";
     }
 
@@ -91,7 +92,7 @@ public class Converter
                 return GetArrayDefinition(type);
             
             case TsType.Collection:
-                return Converter.GetCollectionDefinition(type);
+                return GetCollectionDefinition(type);
             
             case TsType.Generic:
                 return GetGenericDefinition(type);
