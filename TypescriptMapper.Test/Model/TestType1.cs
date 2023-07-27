@@ -1,4 +1,4 @@
-using TypescriptMapper.Attributes;
+using TypescriptMapper.Annotations;
 
 namespace TypescriptMapper.Test.Model;
 

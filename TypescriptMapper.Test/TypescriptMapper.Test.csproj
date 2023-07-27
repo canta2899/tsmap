@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\TypeScriptMapper.Annotations\TypeScriptMapper.Annotations.csproj" />
       <ProjectReference Include="..\TypescriptMapper\TypescriptMapper.csproj" />
     </ItemGroup>
 

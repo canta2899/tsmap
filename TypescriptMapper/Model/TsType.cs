@@ -1,3 +1,5 @@
+using TypescriptMapper.Attributes;
+
 namespace TypescriptMapper;
 
 public enum TsType

@@ -6,8 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\TypeScriptMapper.Annotations\TypeScriptMapper.Annotations.csproj" />
-    </ItemGroup>
-
 </Project>

@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using TypescriptMapper.Attributes;
+using TypescriptMapper.Annotations;
 using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("TypescriptMapper.Test")]

@@ -1,4 +1,4 @@
-namespace TypescriptMapper;
+namespace TypescriptMapper.Attributes;
 
 internal class TsTypeNameAttribute : Attribute
 {

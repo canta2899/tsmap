@@ -1,4 +1,4 @@
-namespace TypescriptMapper.Attributes;
+namespace TypescriptMapper.Annotations;
 
 public class TsMapAttribute : Attribute
 {

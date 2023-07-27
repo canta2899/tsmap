@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
 using TypescriptMapper.Extensions;
+using TypescriptMapper.Annotations;
+using TypescriptMapper.Attributes;
 using TypeExtensions = TypescriptMapper.Extensions.TypeExtensions;
 
 namespace TypescriptMapper;
