@@ -42,7 +42,8 @@ public class Converter
 
         if (type.IsCollection()) return TsType.Collection;
 
-        if (type.IsGenericType) return TsType.Generic;
+        if (type.IsGenericType)
+            return IsTypeExpansionAllowed(type) ? TsType.Generic : TsType.Any;
 
         if (type.IsDate()) return TsType.Date;
 

@@ -25,7 +25,6 @@ public class MapperTest
     [Fact]
     public void Mapper_ShouldMapClassName_WhenPropertyOfTypeClassExists()
     {
-        
         // arrange
         Mapper mapper = new();
         var expected =
@@ -33,6 +32,21 @@ public class MapperTest
         
         // act
         var mappedType = mapper.Map<TestType2>();
+        
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+    
+    [Fact]
+    public void Mapper_ShouldMapToAny_WhenCannotExpandToType()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected =
+            $"export interface TestType2 {{\n{_t}entryOne?: string;\n{_t}entryTwo?: any;\n}}";
+        
+        // act
+        var mappedType = mapper.Map<TestType2>(new Converter(new List<Type>()));
         
         // assert
         Assert.Equal(expected, mappedType);
@@ -94,6 +108,20 @@ public class MapperTest
 
         // act
         var mappedType = mapper.Map<TestType6>();
+
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+    
+    [Fact]
+    public void Mapper_ShouldUseAny_WhenTypeIsNotInExpandList()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export interface TestType6 {{\n{_t}boolGeneric?: any;\n}}";
+
+        // act
+        var mappedType = mapper.Map<TestType6>(new Converter(new List<Type>()));
 
         // assert
         Assert.Equal(expected, mappedType);
