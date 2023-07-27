@@ -34,7 +34,7 @@ public static class TypeExtensions
         return t == TypeCode.String || t == TypeCode.Char;
     }
 
-    public static bool IsBool(this Type type) => type == typeof(bool);
+    public static bool IsBool(this Type type) => Type.GetTypeCode(type) == TypeCode.Boolean;
 
     public static bool IsDate(this Type type) => Type.GetTypeCode(type) == TypeCode.DateTime;
 

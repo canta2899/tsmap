@@ -13,14 +13,10 @@ if (arguments.Length < 2)
 }
 
 var assemblyPath = Path.GetFullPath(arguments[1]);
-Console.WriteLine($"Looking up {assemblyPath}");
-
 var mapper = new Mapper();
 using var sw = new StringWriter();
 var assembly = Assembly.LoadFrom(assemblyPath);
-
 mapper.MapAssembly(assembly, sw);
-
 Console.WriteLine(sw.ToString());
 
 

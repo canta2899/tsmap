@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using TypescriptMapper.Extensions;
 using TypeExtensions = TypescriptMapper.Extensions.TypeExtensions;
 
@@ -6,9 +7,26 @@ namespace TypescriptMapper;
 
 public class Converter
 {
-    internal static string FallbackType => "any";
+    private readonly Dictionary<Guid, string>? _allowedTypes;
+
+    public Converter(IEnumerable<Type> expandTypes)
+    {
+        _allowedTypes = new();
+        expandTypes.Aggregate(_allowedTypes, (acc, next) =>
+        {
+            acc.TryAdd(next.GUID, next.Name);
+            return acc;
+        });
+    }
+
+    public Converter()
+    {
+        _allowedTypes = null;
+    }
+
+    internal string FallbackType => "any";
     
-    internal static TsType ToTsType(Type type)
+    internal TsType ToTsType(Type type)
     {
         if (type.IsNumeric()) return TsType.Number;
 
@@ -18,7 +36,7 @@ public class Converter
 
         if (type.IsObject()) return TsType.Any;
 
-        if (type.IsGenericType && type.Name is "Nullable`1") return TsType.Nullable;
+        if (type is { IsGenericType: true, Name: "Nullable`1" }) return TsType.Nullable;
 
         if (type.IsArray()) return TsType.Array;
 
@@ -27,26 +45,27 @@ public class Converter
         if (type.IsGenericType) return TsType.Generic;
 
         if (type.IsDate()) return TsType.Date;
-        
-        if (type.IsClass || type.IsInterface) return TsType.Object;
 
-        throw new TypeMapException();;
+        if (type.IsClass || type.IsInterface)
+            return IsTypeExpansionAllowed(type) ? TsType.Object : TsType.Any;
+
+        throw new TypeMapException($"Unable to map {type.Name} to typescript");;
     }
 
-    internal static string ToCamelCasePropertyName(PropertyInfo propertyInfo)
+    private bool IsTypeExpansionAllowed(Type t)
     {
-        return propertyInfo.Name.ToCamelCase();
+        return _allowedTypes is null || _allowedTypes.TryGetValue(t.GUID, out var _);
     }
 
-    private static string NormalizeGenericTypeName(string typeName) => typeName.Split("`")[0];
+    internal string NormalizeTypeName(Type t) => t.IsGenericType ? t.Name.Split("`")[0] : t.Name;
 
-    internal static string GetGenericDefinition(Type type)
+    internal string GetGenericDefinition(Type type)
     {
         var genericTypes = type.GetGenericArguments().Select(x => MapToTsType(x));
-        return $"{NormalizeGenericTypeName(type.Name)}<{string.Join(", ", genericTypes)}>";
+        return $"{NormalizeTypeName(type)}<{string.Join(", ", genericTypes)}>";
     }
 
-    internal static string GetCollectionDefinition(Type type)
+    internal string GetCollectionDefinition(Type type)
     {
         var genericArg = type.GetGenericArguments().FirstOrDefault();
         var mappedGenericArg = MapToTsType(genericArg);
@@ -54,14 +73,14 @@ public class Converter
         return $"{safeTypeName}[]";
     }
 
-    internal static string GetArrayDefinition(Type type)
+    internal string GetArrayDefinition(Type type)
     {
         var arrayType = type.GetArrayType();
         var mapType = arrayType is not null ? MapToTsType(arrayType) : "";
         return $"{mapType}[]";
     }
 
-    internal static string GetNullableDefinition(Type type)
+    internal string GetNullableDefinition(Type type)
     {
         
         var generic = type.GetGenericArguments().FirstOrDefault();
@@ -70,9 +89,22 @@ public class Converter
         return $"{safeTypeName} | null";
     }
 
-    private static string GetSafeTypeName(string typeName) => string.IsNullOrEmpty(typeName) ? "any" : typeName;
+    private string GetSafeTypeName(string typeName) => string.IsNullOrEmpty(typeName) ? "any" : typeName;
+
+    internal string? GetExtendedType(Type t)
+    {
+        if (t.BaseType is null || t.BaseType == typeof(Object)) return null;
+
+        if (_allowedTypes is null)
+            return MapToTsType(t.BaseType);
+        
+        if (_allowedTypes.TryGetValue(t.BaseType.GUID, out var _))
+            return MapToTsType(t.BaseType);
+        
+        return null;
+    }
     
-    internal static string MapToTsType(Type type)
+    internal string MapToTsType(Type type)
     {
         var tsType = ToTsType(type);
         
@@ -98,7 +130,7 @@ public class Converter
                 return GetGenericDefinition(type);
             
             case TsType.Object:
-                return type.Name;
+                return NormalizeTypeName(type);
             
             default:
                 return FallbackType;

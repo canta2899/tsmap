@@ -112,6 +112,34 @@ public class MapperTest
         // assert
         Assert.Equal(expected, mappedType);
     }
+    
+    [Fact]
+    public void Mapper_ShouldAddExtends_WhenClassInheritsFromAllowedModel()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export interface TestType8 extends TestType7 {{\n{_t}newField?: string;\n}}";
+        
+        // act
+        var mappedType = mapper.Map<TestType8>();
+
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+
+    [Fact]
+    public void Mapper_ShouldMapEnum_WhenEnumIsProvided()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export enum TestEnum {{\n{_t}CaseOne,\n{_t}CaseTwo,\n}}";
+        
+        // act
+        var mappedType = mapper.Map<TestEnum>();
+
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
 
     [Fact]
     public void Mapper_ShouldReturnMarkedTypes_WhenScanningAssembly()
@@ -134,6 +162,7 @@ public class MapperTest
         Assert.Contains("TestTypeGeneric1", foundTypes);
         Assert.Contains("TestTypeGeneric2", foundTypes);
     }
+
 
     [Fact]
     public void Mapper_ShouldSkipType_WhenNotMaked()
