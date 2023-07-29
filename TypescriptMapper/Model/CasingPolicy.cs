@@ -1,4 +1,4 @@
-namespace TypescriptMapper.Annotations;
+namespace TypescriptMapper.Model;
 
 public enum CasingPolicy
 {

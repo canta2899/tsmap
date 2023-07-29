@@ -37,7 +37,10 @@ public class Converter
         throw new TypeMapException($"Unable to map {type.Name} to typescript");;
     }
 
-    internal static string NormalizePropertyName(Type t) => t.IsGenericType ? t.Name.Split("`")[0] : t.Name;
+    internal static string NormalizePropertyName(Type t)
+    {
+        return t.IsGenericType ? t.Name.Split("`")[0] : t.Name;    
+    }
 
     internal static string NormalizeTypeName(Type t)
     {

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using TypescriptMapper;
 using TypescriptMapper.Annotations;
+using TypescriptMapper.Model;
 
 var arguments = Environment.GetCommandLineArgs();
 

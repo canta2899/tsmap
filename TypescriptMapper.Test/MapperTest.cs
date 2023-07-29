@@ -197,6 +197,20 @@ public class MapperTest
         Assert.Equal(expected, mappedType);
     }
 
+     [Fact]
+    public void Mapper_ShouldUseOverriddenNames_WhenTsNameIsSupplied()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export interface TestType11 {{\n{_t}customName?: string;\n{_t}lastname?: string;\n}}";
+        
+        // act
+        var mappedType = mapper.Map<TestType11>();
+
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+
     [Fact]
     public void Mapper_ShouldReturnMarkedTypes_WhenScanningAssembly()
     {

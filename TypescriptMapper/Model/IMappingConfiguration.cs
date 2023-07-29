@@ -1,4 +1,5 @@
 using TypescriptMapper.Annotations;
+using TypescriptMapper.Model;
 
 namespace TypescriptMapper;
 

@@ -1,6 +1,7 @@
 using System.Text;
 using TypescriptMapper.Annotations;
 using TypescriptMapper.Extensions;
+using TypescriptMapper.Model;
 
 namespace TypescriptMapper;
 

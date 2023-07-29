@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using TypescriptMapper.Annotations;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using TypescriptMapper.Extensions;
 
 [assembly:InternalsVisibleTo("TypescriptMapper.Test")]
 namespace TypescriptMapper;
@@ -23,29 +25,54 @@ public class Mapper
         return Map(typeof(T));
     }
 
-    public string Map(Type t)
+    private IEnumerable<TsEnumField> GetEnumFields(Type t)
     {
-        if (t.IsEnum) return Formatter.WriteTsEnum(new TsEnum()
+        return
+            t
+            .GetFields()
+            .Where(x => x.Name != "value__")
+            .Select(x => new TsEnumField() { Name = x.GetNameOrDefault() });
+    }
+
+    private IEnumerable<TsInterfaceField> GetInterfaceFields(IEnumerable<PropertyInfo> mappableProps)
+    {
+        return mappableProps.Select(x => new TsInterfaceField()
         {
-            Name = t.Name,
-            Fields = t.GetFields().Where(x => x.Name != "value__").Select(x => new TsEnumField() { Name = x.Name })
-        }, _configuration);
-        
-        var properties = GetMappableProperties(t).Select(x => new TsInterfaceField()
-        {
-            Name = x.Name,
+            Name = x.GetNameOrDefault(),
             Type = Converter.MapToTsType(x.PropertyType)
         });
-        
+    }
+
+    private TsInterface GetTsInterface(Type t)
+    {
         var name = Converter.NormalizeTypeName(t);
         var extends = Converter.GetExtendedType(t) ?? "";
-        
-        return Formatter.WriteTsInterface(new TsInterface()
+        var properties = GetInterfaceFields(GetMappableProperties(t));
+
+        return new TsInterface()
         {
             Name = name,
             Extends = extends,
-            Fields = properties
-        }, _configuration);
+            Fields = properties,
+        };
+    }
+
+    public string Map(Type t)
+    {
+        if (t.IsEnum)
+        {
+            var fields = GetEnumFields(t);
+            var entry = new TsEnum()
+            {
+                Name = t.Name,
+                Fields = fields
+            };
+
+            return Formatter.WriteTsEnum(entry, _configuration);
+        }
+
+        var tsInterface = GetTsInterface(t);
+        return Formatter.WriteTsInterface(tsInterface, _configuration);
     }
 
     public void MapAssembly(Assembly assembly, TextWriter tw)
