@@ -23,21 +23,6 @@ public class MapperTest
     }
 
     [Fact]
-    public void Mapper_ShouldMapClassName_WhenPropertyOfTypeClassExists()
-    {
-        // arrange
-        Mapper mapper = new();
-        var expected =
-            $"export interface TestType2 {{\n{_t}entryOne?: string;\n{_t}entryTwo?: TestType1;\n}}";
-        
-        // act
-        var mappedType = mapper.Map<TestType2>();
-        
-        // assert
-        Assert.Equal(expected, mappedType);
-    }
-    
-    [Fact]
     public void Mapper_ShouldMapToAny_WhenCannotExpandToType()
     {
         // arrange
@@ -46,7 +31,7 @@ public class MapperTest
             $"export interface TestType2 {{\n{_t}entryOne?: string;\n{_t}entryTwo?: any;\n}}";
         
         // act
-        var mappedType = mapper.Map<TestType2>(new Converter(new List<Type>()));
+        var mappedType = mapper.Map<TestType2>();
         
         // assert
         Assert.Equal(expected, mappedType);
@@ -114,28 +99,57 @@ public class MapperTest
     }
     
     [Fact]
-    public void Mapper_ShouldUseAny_WhenTypeIsNotInExpandList()
+    public void Mapper_ShouldMapPropertyType_WhenTypeIsExpandable()
     {
         // arrange
         Mapper mapper = new();
-        var expected = $"export interface TestType6 {{\n{_t}boolGeneric?: any;\n}}";
+        var expected = $"export interface TestType6 {{\n{_t}boolGeneric?: TestTypeGeneric1<boolean>;\n}}";
 
         // act
-        var mappedType = mapper.Map<TestType6>(new Converter(new List<Type>()));
+        var type = typeof(TestTypeGeneric1<bool>);
+        var mappedType = mapper.Map<TestType6>();
 
         // assert
         Assert.Equal(expected, mappedType);
     }
 
     [Fact]
-    public void Mapper_ShouldRespectPrimiveTypes_WhenMappingGeneric()
+    public void Mapper_ShouldRespectGenerics_WhenGenericTypeIsMapped()
     {
         // arrange
         Mapper mapper = new();
-        var expected = $"export interface TestType7 {{\n{_t}stringList?: string[];\n}}";
+        var expected = $"export interface TestType6 {{\n{_t}boolGeneric?: TestTypeGeneric1<boolean>;\n}}";
         
         // act
-        var mappedType = mapper.Map<TestType7>();
+        var mappedType = mapper.Map<TestType6>();
+
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+
+    [Fact]
+    public void Mapper_ShouldUseAny_WhenGenericTypeIsNotMapped()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export interface TestType9 {{\n{_t}notMappedProp?: any;\n}}";
+        
+        // act
+        var mappedType = mapper.Map<TestType9>();
+        
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+
+    [Fact]
+    public void Mapper_ShouldMapGenericParameters_WhenSupplied()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export interface TestTypeGeneric1<T> {{\n{_t}entry?: T;\n}}";
+        
+        // act
+        var mappedType = mapper.Map(typeof(TestTypeGeneric1<>));
 
         // assert
         Assert.Equal(expected, mappedType);
@@ -170,6 +184,20 @@ public class MapperTest
     }
 
     [Fact]
+    public void Mapper_ShouldIgnoreInterfaces_WhenTypeImplementsAny()
+    {
+        // arrange
+        Mapper mapper = new();
+        var expected = $"export interface TestType10 {{\n{_t}name?: string;\n}}";
+        
+        // act
+        var mappedType = mapper.Map<TestType10>();
+
+        // assert
+        Assert.Equal(expected, mappedType);
+    }
+
+    [Fact]
     public void Mapper_ShouldReturnMarkedTypes_WhenScanningAssembly()
     {
         // arrange
@@ -193,7 +221,7 @@ public class MapperTest
 
 
     [Fact]
-    public void Mapper_ShouldSkipType_WhenNotMaked()
+    public void Mapper_ShouldSkipType_WhenNotMarked()
     {
         // arrange
         Mapper mapper = new();
@@ -210,5 +238,4 @@ public class MapperTest
     }
     
     private string RemoveGenericName(string name) => name.Split("`")[0];
-    
 }

@@ -1,5 +1,5 @@
-using System.Reflection;
 using System.Text;
+using TypescriptMapper.Annotations;
 using TypescriptMapper.Extensions;
 
 namespace TypescriptMapper;
@@ -11,7 +11,7 @@ public class Formatter
     {
         var sb = new StringBuilder();
 
-        if (configuration.ExportAll) sb.Append("export ");
+        sb.Append("export ");
 
         sb.Append($"interface {tsInterface.Name} ");
         if (!string.IsNullOrEmpty(tsInterface.Extends)) sb.Append($"extends {tsInterface.Extends} ");
@@ -44,7 +44,7 @@ public class Formatter
     {
         var sb = new StringBuilder();
 
-        if (configuration.ExportAll) sb.Append("export ");
+        sb.Append("export ");
 
         sb.Append($"enum {tsEnum.Name} {{\n");
         foreach (var field in tsEnum.Fields)

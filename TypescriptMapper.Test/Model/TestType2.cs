@@ -6,5 +6,5 @@ namespace TypescriptMapper.Test.Model;
 public class TestType2
 {
     public string EntryOne { get; set; }
-    public TestType1 EntryTwo { get; set; } 
+    public NotMappedType EntryTwo { get; set; } 
 }

@@ -20,20 +20,10 @@ public class Mapper
     
     public string Map<T>()
     {
-        return Map(typeof(T), new Converter());
-    }
-    
-    public string Map<T>(Converter c)
-    {
-        return Map(typeof(T), c);
+        return Map(typeof(T));
     }
 
     public string Map(Type t)
-    {
-        return Map(t, new Converter());
-    }
-
-    public string Map(Type t, Converter c)
     {
         if (t.IsEnum) return Formatter.WriteTsEnum(new TsEnum()
         {
@@ -44,11 +34,11 @@ public class Mapper
         var properties = GetMappableProperties(t).Select(x => new TsInterfaceField()
         {
             Name = x.Name,
-            Type = c.MapToTsType(x.PropertyType)
+            Type = Converter.MapToTsType(x.PropertyType)
         });
         
-        var name = c.NormalizeTypeName(t);
-        var extends = c.GetExtendedType(t) ?? "";
+        var name = Converter.NormalizeTypeName(t);
+        var extends = Converter.GetExtendedType(t) ?? "";
         
         return Formatter.WriteTsInterface(new TsInterface()
         {
@@ -61,11 +51,11 @@ public class Mapper
     public void MapAssembly(Assembly assembly, TextWriter tw)
     {
         var mappableTypes = GetMappableTypes(assembly);
-        var converter = new Converter(mappableTypes);
+        var expandableTypes = mappableTypes.ToDictionary(x => x.GUID, x => x.Name);
         
         foreach (var t in mappableTypes)
         {
-            var mappedType = Map(t, converter);
+            var mappedType = Map(t);
             tw.WriteLine(mappedType + "\n");
         }
     }
